@@ -12,6 +12,7 @@ variable "PROXMOX_VE_API_TOKEN" {
 variable "PROXMOX_NODE" {
   description = "Proxmox node to deploy to"
   type        = string
+  default     = "pve"
 }
 
 variable "template_name" {
