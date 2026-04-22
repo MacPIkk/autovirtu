@@ -12,13 +12,20 @@ resource "proxmox_vm_qemu" "web_servers" {
   cpu      = "host"
   memory   = 2048
   scsihw   = "virtio-scsi-pci"
-  bootdisk = "scsi0"
+  boot     = "order=scsi0;net0"
 
   disks {
     scsi {
       scsi0 {
         disk {
           size    = "20G"
+          storage = "local-lvm"
+        }
+      }
+    }
+    ide {
+      ide2 {
+        cloudinit {
           storage = "local-lvm"
         }
       }
@@ -47,13 +54,20 @@ resource "proxmox_vm_qemu" "haproxy" {
   cpu      = "host"
   memory   = 1024
   scsihw   = "virtio-scsi-pci"
-  bootdisk = "scsi0"
+  boot     = "order=scsi0;net0"
 
   disks {
     scsi {
       scsi0 {
         disk {
           size    = "10G"
+          storage = "local-lvm"
+        }
+      }
+    }
+    ide {
+      ide2 {
+        cloudinit {
           storage = "local-lvm"
         }
       }
@@ -65,6 +79,7 @@ resource "proxmox_vm_qemu" "haproxy" {
     bridge = "vmbr0"
   }
 
+  # Cloud-init settings
   ipconfig0 = "ip=dhcp"
   sshkeys   = var.ssh_key
 }
