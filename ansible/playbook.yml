@@ -1,0 +1,45 @@
+---
+- name: Configure Web Servers
+  hosts: web
+  become: yes
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Create basic index.html
+      copy:
+        content: "<h1>Hello from {{ inventory_hostname }}</h1>"
+        dest: /var/www/html/index.html
+
+- name: Configure HAProxy Load Balancer
+  hosts: haproxy
+  become: yes
+  tasks:
+    - name: Install HAProxy
+      apt:
+        name: haproxy
+        state: present
+        update_cache: yes
+
+    - name: Configure HAProxy
+      blockinfile:
+        path: /etc/haproxy/haproxy.cfg
+        block: |
+          frontend http_front
+              bind *:80
+              default_backend http_back
+
+          backend http_back
+              balance roundrobin
+              server web1 {{ hostvars['web1']['ansible_host'] }}:80 check
+              server web2 {{ hostvars['web2']['ansible_host'] }}:80 check
+      notify: Restart HAProxy
+
+  handlers:
+    - name: Restart HAProxy
+      service:
+        name: haproxy
+        state: restarted
