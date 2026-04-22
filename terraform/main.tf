@@ -14,10 +14,15 @@ resource "proxmox_vm_qemu" "web_servers" {
   scsihw   = "virtio-scsi-pci"
   bootdisk = "scsi0"
 
-  disk {
-    size    = "20G"
-    type    = "scsi"
-    storage = "local-lvm"
+  disks {
+    scsi {
+      scsi0 {
+        disk {
+          size    = "20G"
+          storage = "local-lvm"
+        }
+      }
+    }
   }
 
   network {
@@ -44,10 +49,15 @@ resource "proxmox_vm_qemu" "haproxy" {
   scsihw   = "virtio-scsi-pci"
   bootdisk = "scsi0"
 
-  disk {
-    size    = "10G"
-    type    = "scsi"
-    storage = "local-lvm"
+  disks {
+    scsi {
+      scsi0 {
+        disk {
+          size    = "10G"
+          storage = "local-lvm"
+        }
+      }
+    }
   }
 
   network {
